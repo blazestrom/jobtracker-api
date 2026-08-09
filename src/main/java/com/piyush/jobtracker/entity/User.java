@@ -1,6 +1,11 @@
 package com.piyush.jobtracker.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import org.apache.juli.logging.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,15 +14,26 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private int id;
+    private Long id;
+
+    @NotBlank(message = "Name cannot be blank")
     @Column(nullable = false)
     private String name;
+
+    @Email(message = "Email should be valid")
+    @NotBlank(message = "Email cnnot be blank")
     @Column(nullable = false)
     private String email;
+
+    @Size(min=8,message = "Password must be at least 8 characters")
     @Column(nullable = false)
     private String password;
+
+    @NotBlank(message = "college should be valid")
     @Column(nullable = false)
     private String college;
+
+
     @Column(nullable = false)
     private int yearOfPassing;
 
@@ -27,11 +43,11 @@ public class User {
 
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
