@@ -2,6 +2,9 @@ package com.piyush.jobtracker.entity;
 
 import com.piyush.jobtracker.enums.JobStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
@@ -14,17 +17,22 @@ public class JobApplication {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+    @NotBlank(message = "user cannot be null")
 
+    @NotBlank(message = "compnay name should not be blank")
     @Column(nullable = false)
     private String companyName;
 
+    @NotBlank(message =  "Job role should not be blank")
     @Column(nullable = false)
     private String jobRole;
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private JobStatus status;
 
+    @NotNull(message = "applied date should not be blank")
     @Column(nullable = false)
     private LocalDate appliedDate;
 
@@ -38,7 +46,12 @@ public class JobApplication {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
+    public User getUser(){
+        return   user;
+    }
+    public void setUser(User user){
+        this.user=user;
+    }
 
     public Long getId() {
         return id;

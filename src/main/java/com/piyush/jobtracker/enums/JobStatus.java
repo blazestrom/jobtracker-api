@@ -2,7 +2,7 @@ package com.piyush.jobtracker.enums;
 
 public enum JobStatus {
             APPLIED,
-            INTERVEIW,
+            INTERVIEW,
             REJECTED,
             OFFERED
 

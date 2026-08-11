@@ -29,4 +29,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
 
     }
+    @ExceptionHandler(JobApplicationNotFoundException.class)
+    public ResponseEntity<String> handleJobNotFound(JobApplicationNotFoundException ex){
+        return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }
