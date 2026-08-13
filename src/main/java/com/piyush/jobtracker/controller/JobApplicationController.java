@@ -1,10 +1,8 @@
 package com.piyush.jobtracker.controller;
 
-import com.piyush.jobtracker.dto.JobApplicationRequestDTO;
-import com.piyush.jobtracker.dto.JobApplicationResponseDTO;
-import com.piyush.jobtracker.dto.JobApplicationUpdatedDTO;
-import com.piyush.jobtracker.dto.JobStatusUpdateDTO;
+import com.piyush.jobtracker.dto.*;
 import com.piyush.jobtracker.entity.JobApplication;
+import com.piyush.jobtracker.enums.JobStatus;
 import com.piyush.jobtracker.service.JobApplicationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -13,6 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PutMapping;
 import java.util.List;
 import  org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @RestController
 @RequestMapping("/applications")
@@ -32,12 +34,26 @@ public class JobApplicationController {
         List<JobApplicationResponseDTO>application = jobApplicationService.getAllApplication();
         return  ResponseEntity.ok(application);
     }
+    @GetMapping("/stats/{userId}")
+    public ResponseEntity<JobApplicationStatsDTO> getApplicationStats(@PathVariable Long userId){
+        JobApplicationStatsDTO stats= jobApplicationService.getApplicationStats(userId);
+        return ResponseEntity.ok(stats);
+    }
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<JobApplicationResponseDTO>> getApplicationsByUserId(
             @PathVariable Long userId) {
 
         List<JobApplicationResponseDTO> applications =
                 jobApplicationService.getApplicationsByUserId(userId);
+
+        return ResponseEntity.ok(applications);
+    }
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<JobApplicationResponseDTO>> getApplicationsByStatus(
+            @PathVariable JobStatus status) {
+
+        List<JobApplicationResponseDTO> applications =
+                jobApplicationService.getApplicationsByStatus(status);
 
         return ResponseEntity.ok(applications);
     }
@@ -51,6 +67,22 @@ public class JobApplicationController {
         JobApplicationResponseDTO updated=jobApplicationService.UpdateStatus(id,request);
         return ResponseEntity.ok(updated);
     }
+    @GetMapping("/search")
+    public ResponseEntity<List<JobApplicationResponseDTO>> getApplicationsByCompanyName(
+            @RequestParam String companyName) {
+
+        List<JobApplicationResponseDTO> applications =
+                jobApplicationService.getApplicationsByCompanyName(companyName);
+
+        return ResponseEntity.ok(applications);
+    }
+    @GetMapping("/search/role")
+    public ResponseEntity<List<JobApplicationResponseDTO>> getApplicationByJobRole(
+            @RequestParam String jobRole){
+        List<JobApplicationResponseDTO>applications=jobApplicationService.getApplicationByJobRole(jobRole);
+        return ResponseEntity.ok(applications);
+    }
+
     @PutMapping("/{id}")
     public  ResponseEntity<JobApplicationResponseDTO>  updateApplication(
             @PathVariable Long id,
@@ -63,5 +95,19 @@ public class JobApplicationController {
         jobApplicationService.deleteApplication(id);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/paginated")
+    public ResponseEntity<Page<JobApplicationResponseDTO>> getAllApplicationsPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
+
+        Page<JobApplicationResponseDTO> result =
+                jobApplicationService.getAllApplicationsPaginatedSort(page, size, sortBy, direction);
+
+        return ResponseEntity.ok(result);
+    }
+
+
 
 }

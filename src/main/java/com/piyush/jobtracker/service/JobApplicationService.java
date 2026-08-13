@@ -1,13 +1,14 @@
 package com.piyush.jobtracker.service;
 
 import com.piyush.jobtracker.JobtrackerApplication;
-import com.piyush.jobtracker.dto.JobApplicationRequestDTO;
-import com.piyush.jobtracker.dto.JobApplicationResponseDTO;
-import com.piyush.jobtracker.dto.JobApplicationUpdatedDTO;
-import com.piyush.jobtracker.dto.JobStatusUpdateDTO;
+import com.piyush.jobtracker.dto.*;
 import com.piyush.jobtracker.entity.JobApplication;
 import com.piyush.jobtracker.enums.JobStatus;
 import com.piyush.jobtracker.repository.JobApplicationRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.piyush.jobtracker.repository.UserRepository;
 import com.piyush.jobtracker.exception.UserNotFoundException;
@@ -15,6 +16,7 @@ import com.piyush.jobtracker.entity.User;
 import com.piyush.jobtracker.exception.JobApplicationNotFoundException;
 import java.time.LocalDate;
 import java.util.*;
+import org.springframework.data.domain.Sort;
 
 @Service
 public class JobApplicationService {
@@ -149,6 +151,127 @@ public class JobApplicationService {
                 .orElseThrow(() -> new JobApplicationNotFoundException("Application not found with id: " + id));
 
         jobApplicationRepository.delete(app);
+    }
+    public List<JobApplicationResponseDTO> getApplicationsByStatus(JobStatus status) {
+
+        List<JobApplication> applications = jobApplicationRepository.findByStatus(status);
+
+        List<JobApplicationResponseDTO> responseList = new ArrayList<>();
+
+        for (JobApplication app : applications) {
+            JobApplicationResponseDTO dto = new JobApplicationResponseDTO(
+                    app.getId(),
+                    app.getCompanyName(),
+                    app.getJobRole(),
+                    app.getStatus(),
+                    app.getAppliedDate(),
+                    app.getJobLink()
+            );
+            responseList.add(dto);
+        }
+
+        return responseList;
+    }
+    public List<JobApplicationResponseDTO> getApplicationsByCompanyName(String companyName) {
+
+        List<JobApplication> applications =
+                jobApplicationRepository.findByCompanyNameContainingIgnoreCase(companyName);
+
+        List<JobApplicationResponseDTO> responseList = new ArrayList<>();
+
+        for (JobApplication app : applications) {
+            JobApplicationResponseDTO dto = new JobApplicationResponseDTO(
+                    app.getId(),
+                    app.getCompanyName(),
+                    app.getJobRole(),
+                    app.getStatus(),
+                    app.getAppliedDate(),
+                    app.getJobLink()
+            );
+            responseList.add(dto);
+        }
+
+        return responseList;
+    }
+    public List<JobApplicationResponseDTO> getApplicationByJobRole(String jobRole){
+        List<JobApplication >applications=jobApplicationRepository.findByJobRoleContainingIgnoreCase(jobRole);
+        List<JobApplicationResponseDTO> responseList = new ArrayList<>();
+        for(JobApplication app:applications){
+            JobApplicationResponseDTO dto = new JobApplicationResponseDTO(
+                    app.getId(),
+                    app.getCompanyName(),
+                    app.getJobRole(),
+                    app.getStatus(),
+                    app.getAppliedDate(),
+                    app.getJobLink()
+            );
+            responseList.add(dto);
+        }
+        return responseList;
+    }
+    public Page<JobApplicationResponseDTO> getAllApplicationsPaginated(int page, int size){
+        Pageable pageable = PageRequest.of(page,size);
+      Page<JobApplication> applicationPage= jobApplicationRepository.findAll(pageable);
+      return applicationPage.map(app->new JobApplicationResponseDTO(
+              app.getId(),
+              app.getCompanyName(),
+              app.getJobRole(),
+              app.getStatus(),
+              app.getAppliedDate(),
+              app.getJobLink()
+      ));
+    }
+    public Page<JobApplicationResponseDTO> getAllApplicationsPaginated(
+            int page, int size, String sortBy, String direction) {
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<JobApplication> applicationPage = jobApplicationRepository.findAll(pageable);
+
+        return applicationPage.map(app -> new JobApplicationResponseDTO(
+                app.getId(),
+                app.getCompanyName(),
+                app.getJobRole(),
+                app.getStatus(),
+                app.getAppliedDate(),
+                app.getJobLink()
+        ));
+    }
+    public Page<JobApplicationResponseDTO> getAllApplicationsPaginatedSort(int page, int size, String sortBy, String direction) {
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<JobApplication> applicationPage = jobApplicationRepository.findAll(pageable);
+
+        return applicationPage.map(app -> new JobApplicationResponseDTO(
+                app.getId(),
+                app.getCompanyName(),
+                app.getJobRole(),
+                app.getStatus(),
+                app.getAppliedDate(),
+                app.getJobLink()
+        ));
+    }
+
+    public JobApplicationStatsDTO getApplicationStats(Long UserId){
+        List<JobApplication> applications=jobApplicationRepository.findByUserId(UserId);
+
+        long total =applications.size();
+        long applied = applications.stream().filter(app->app.getStatus()==JobStatus.APPLIED).count();
+        long interview=applications.stream().filter(app->app.getStatus()==JobStatus.INTERVIEW).count();
+        long offered =applications.stream().filter(app->app.getStatus()==JobStatus.OFFERED).count();
+        long rejected=applications.stream().filter(app->app.getStatus()==JobStatus.REJECTED).count();
+
+        return new JobApplicationStatsDTO(total,applied,interview,offered,rejected);
+
     }
 
 }
