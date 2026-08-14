@@ -28,7 +28,7 @@ public class JobApplicationService {
         this.jobApplicationRepository = jobApplicationRepository;
         this.userRepository = userRepository;
     }
-    public JobApplicationResponseDTO createJobApplication(JobApplicationRequestDTO request) {
+    public JobApplicationResponseDTO createJobApplication(JobApplicationRequestDTO request ,Long userId) {
 
         JobApplication jobApplication = new JobApplication();
 
@@ -41,7 +41,7 @@ public class JobApplicationService {
         jobApplication.setStatus(JobStatus.APPLIED);
         jobApplication.setAppliedDate(LocalDate.now());
 
-        User user = userRepository.findById(request.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         jobApplication.setUser(user);

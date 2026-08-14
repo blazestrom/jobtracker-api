@@ -25,8 +25,14 @@ public class JobApplicationController {
         this.jobApplicationService=jobApplicationService;}
 
     @PostMapping
-    public ResponseEntity<JobApplicationResponseDTO> createApplication(@Valid @RequestBody JobApplicationRequestDTO jobApplication){
-            return  ResponseEntity.status(HttpStatus.CREATED).body(jobApplicationService.createJobApplication(jobApplication));
+    public ResponseEntity<JobApplicationResponseDTO> createApplication(
+            @Valid @RequestBody JobApplicationRequestDTO request,
+            @RequestAttribute("userId") Long userId) {
+
+        JobApplicationResponseDTO savedApplication =
+                jobApplicationService.createJobApplication(request, userId);
+
+        return ResponseEntity.status(201).body(savedApplication);
     }
 
     @GetMapping

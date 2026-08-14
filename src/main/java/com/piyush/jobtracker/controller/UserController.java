@@ -1,5 +1,8 @@
 package com.piyush.jobtracker.controller;
 import java.util.*;
+
+import com.piyush.jobtracker.dto.LoginRequestDTO;
+import com.piyush.jobtracker.dto.LoginResponseDTO;
 import com.piyush.jobtracker.dto.UserResponseDTO;
 import com.piyush.jobtracker.entity.User;
 import com.piyush.jobtracker.service.UserService;
@@ -41,6 +44,11 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
+    }
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> login (@Valid @ RequestBody LoginRequestDTO request){
+        LoginResponseDTO user=   userService.loginUser(request);
+        return  ResponseEntity.ok(user);
     }
 
 
