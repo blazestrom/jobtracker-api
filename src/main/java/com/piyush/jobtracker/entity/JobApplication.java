@@ -9,7 +9,9 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "job_applications")
+@Table(name = "job_applications", indexes = {
+        @Index(name = "idx_job_app_status_user", columnList = "status, user_id")
+})
 public class JobApplication {
     public JobApplication() {
     }

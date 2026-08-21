@@ -1,11 +1,14 @@
 package com.piyush.jobtracker.dto;
 
+import com.piyush.jobtracker.enums.Role;
+
 public class UserResponseDTO {
     private Long id;
     private String name;
     private String email;
     private String college;
     private int yearOfPassing;
+    private Role role;
 
     public UserResponseDTO() {
     }
@@ -49,15 +52,26 @@ public class UserResponseDTO {
     public void setYearOfPassing(int yearOfPassing) {
         this.yearOfPassing = yearOfPassing;
     }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     public UserResponseDTO(Long id,
                            String name,
                            String email,
                            String college,
-                           int yearOfPassing) {
+                           int yearOfPassing,
+                           Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.college = college;
         this.yearOfPassing = yearOfPassing;
+        this.role = role;
     }
 }

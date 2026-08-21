@@ -79,7 +79,7 @@ public class JobApplicationService {
     }
     public List<JobApplicationResponseDTO> getApplicationsByUserId(Long userId) {
 
-        List<JobApplication> applications = jobApplicationRepository.findByUserId(userId);
+        List<JobApplication> applications = jobApplicationRepository.findByUserIdFetchUser(userId);
 
         List<JobApplicationResponseDTO> responseList = new ArrayList<>();
 

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.apache.juli.logging.Log;
 
+import com.piyush.jobtracker.enums.Role;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,10 +38,22 @@ public class User {
     @Column(nullable = false)
     private int yearOfPassing;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    private Role role = Role.USER;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<JobApplication> jobApplications = new ArrayList<>();
     public User() {
 
+    }
+
+    public Role getRole() {
+        return role != null ? role : Role.USER;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public Long getId() {

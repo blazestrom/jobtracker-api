@@ -41,7 +41,8 @@ public class UserService {
                     user.getName(),
                     user.getEmail(),
                     user.getCollege(),
-                    user.getYearOfPassing()
+                    user.getYearOfPassing(),
+                    user.getRole()
             );
 
             response.add(dto);
@@ -65,7 +66,8 @@ public class UserService {
                 user.getName(),
                 user.getEmail(),
                 user.getCollege(),
-                user.getYearOfPassing()
+                user.getYearOfPassing(),
+                user.getRole()
         );
         return dto;
     }
@@ -74,6 +76,9 @@ public class UserService {
 
 
     public UserResponseDTO saveUser(User user) {
+        if (user.getRole() == null) {
+            user.setRole(com.piyush.jobtracker.enums.Role.USER);
+        }
         String  hashedPassword= passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
         User savedUser = userRepository.save(user);
@@ -83,7 +88,8 @@ public class UserService {
                 savedUser.getName(),
                 savedUser.getEmail(),
                 savedUser.getCollege(),
-                savedUser.getYearOfPassing()
+                savedUser.getYearOfPassing(),
+                savedUser.getRole()
         );
     }
     public LoginResponseDTO loginUser(LoginRequestDTO request){
@@ -94,7 +100,7 @@ public class UserService {
                if(!passwordMatches){
                    throw  new UserNotFoundException("Invalid email or password");
                }
-               String token = jwtUtil.generateToken(user.getEmail(),user.getId());
+               String token = jwtUtil.generateToken(user.getEmail(), user.getId(), user.getRole().name());
                return new LoginResponseDTO(
                              user.getId(),
                             user.getName(),

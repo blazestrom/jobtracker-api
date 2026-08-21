@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/applications")
@@ -36,6 +37,7 @@ public class JobApplicationController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<JobApplicationResponseDTO>> getAllApplication() {
         List<JobApplicationResponseDTO>application = jobApplicationService.getAllApplication();
         return  ResponseEntity.ok(application);
@@ -108,8 +110,11 @@ public class JobApplicationController {
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String direction) {
 
+        int cappedSize = Math.min(size, 100);
+        int sanitizedPage = Math.max(page, 0);
+
         Page<JobApplicationResponseDTO> result =
-                jobApplicationService.getAllApplicationsPaginatedSort(page, size, sortBy, direction);
+                jobApplicationService.getAllApplicationsPaginatedSort(sanitizedPage, cappedSize, sortBy, direction);
 
         return ResponseEntity.ok(result);
     }
